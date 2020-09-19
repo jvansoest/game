@@ -16,6 +16,7 @@
     <script src="js/three.js"></script>
     <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
     <script>
+      //python -m http.server 8000
       var loader = new THREE.GLTFLoader();
       var scene = new THREE.Scene();
 
@@ -46,42 +47,38 @@
       var material = new THREE.MeshBasicMaterial({ color: 0xa0ff00 });
       var cube = new THREE.Mesh(geometry, material);
 
-      // scene.add(cube);
+      scene.add(cube);
+      cube.position.set(5, 0, 0);
 
-      var light = new THREE.PointLight(0xffffcc, 20, 200);
-      light.position.set(4, 30, -20);
+      var light = new THREE.PointLight(0xffffff, 1, 0, 0.5);
+      light.position.set(5, 6, 0);
       scene.add(light);
 
-      var light2 = new THREE.AmbientLight(0x20202a, 20, 100);
-      light2.position.set(30, -10, 30);
-      scene.add(light2);
-
+      loader.crossOrigin = true;
       loader.load(
         "/roombox2.glb",
         function (gltf) {
-          console.log("success");
-          scene.add(gltf.scene);
+          const roombox = gltf.scene;
+          scene.add(roombox);
+          function animate() {
+            requestAnimationFrame(animate);
+            roombox.rotation.x += 0.01;
+            roombox.rotation.y += 0.01;
+            renderer.render(scene, camera);
+          }
+
+          animate();
         },
         undefined,
-        function (error) {
-          console.error("load failed cus:", error);
-        }
+        (error) => console.error(error)
       );
 
-      camera.position.z = 5;
-      camera.position.x = 2;
+      camera.position.z = 6;
+      camera.position.x = 5;
 
       /*This will create a loop that causes the renderer to draw
             the scene every time the screen is refreshed (on a typical
             screen this means 60 times per second)*/
-      function animate() {
-        requestAnimationFrame(animate);
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        renderer.render(scene, camera);
-      }
-
-      animate();
     </script>
   </body>
 </html>
